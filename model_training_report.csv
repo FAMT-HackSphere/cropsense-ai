@@ -1,0 +1,11 @@
+Dataset Name,Target Column,Model Used,Primary Metric,Training Time,Status
+crop_production.csv,Crop_Year,RandomForestClassifier,Acc: 0.0993,3.09s,Success
+crop_yield.csv,Crop,RandomForestClassifier,Acc: 0.5119,0.53s,Success
+requirement_availability_sales_fertilisers_2014_to_2024.csv,sales_npks,LinearRegression,MSE: 2.3059,0.03s,Success
+Crop_recommendation (2).csv,label,RandomForestClassifier,Acc: 0.9932,0.22s,Success
+Crop_recommendation.csv,label,RandomForestClassifier,Acc: 0.9932,0.15s,Success
+Crop_recommendation2.csv,label,RandomForestClassifier,Acc: 0.9932,0.14s,Success
+Crop_recommendation3.csv,label,RandomForestClassifier,Acc: 0.9932,0.16s,Success
+crop_and_fertilizer.csv,Crop,RandomForestClassifier,Acc: 1.0000,0.16s,Success
+fertiliser_production_capacity_2014_to_2024.csv,fy_2024_25,LinearRegression,MSE: 7.6037,0.02s,Success
+soil.csv,S %,LinearRegression,MSE: 841.6682,0.04s,Success

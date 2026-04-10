@@ -1,0 +1,1 @@
+﻿SOIL_TYPES = ["Loamy", "Sandy", "Clayey", "Silty", "Peaty"]\nSEASONS = ["Kharif", "Rabi", "Zaid", "Winter", "Rainy", "Summer"]\nDEFAULT_CROPS = ["Rice", "Wheat", "Maize", "Cotton", "Sugarcane", "Jute"]\n

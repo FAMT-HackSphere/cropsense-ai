@@ -1,0 +1,40 @@
+# Flutter
+build/
+.dart_tool/
+.packages
+.pub-cache
+.pub/
+android/
+ios/
+web/
+linux/
+macos/
+windows/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+.pytest_cache/
+
+# ML
+ml/saved_models/*.pkl
+ml/datasets/raw/*.csv
+ml/datasets/processed/*.csv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
+backend/models/yield_model (2).pkl
+serviceAccountKey.json
+datasets.zip
+data/
+*.zip

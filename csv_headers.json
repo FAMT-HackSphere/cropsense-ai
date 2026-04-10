@@ -1,0 +1,113 @@
+{
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_production.csv": [
+    "State_Name",
+    "District_Name",
+    "Crop_Year",
+    "Season",
+    "Crop",
+    "Area",
+    "Production"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_yield.csv": [
+    "Crop",
+    "Crop_Year",
+    "Season",
+    "State",
+    "Area",
+    "Production",
+    "Annual_Rainfall",
+    "Fertilizer",
+    "Pesticide",
+    "Yield"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\requirement_availability_sales_fertilisers_2014_to_2024.csv": [
+    "financial_year",
+    "state_code",
+    "states",
+    "requirement_urea",
+    "availability_urea",
+    "sales_urea",
+    "requirement_dap",
+    "availability_dap",
+    "sales_dap",
+    "requirement_mop"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_prediction\\Crop_recommendation (2).csv": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "label"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_prediction\\Crop_recommendation.csv": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "label"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_prediction\\Crop_recommendation2.csv": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "label"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\crop_prediction\\Crop_recommendation3.csv": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "label"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\Fertilizer_Recommendation\\crop_and_fertilizer.csv": [
+    "",
+    "District_Name",
+    "Soil_color",
+    "Nitrogen",
+    "Phosphorus",
+    "Potassium",
+    "pH",
+    "Rainfall",
+    "Temperature",
+    "Crop"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\Fertilizer_Trends\\fertiliser_production_capacity_2014_to_2024.csv": [
+    "sector",
+    "state",
+    "city",
+    "company",
+    "manufacturing_unit",
+    "fertiliser_type",
+    "fy_2014_15",
+    "fy_2015_16",
+    "fy_2016_17",
+    "fy_2017_18"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\datasets\\Soil_Nutrients\\soil.csv": [
+    "District ",
+    "Zn %",
+    "Fe%",
+    "Cu %",
+    "Mn %",
+    "B %",
+    "S %"
+  ],
+  "d:\\CropSense AI\\cropsense-ai\\ml\\datasets\\external\\rainfall_data.csv": [],
+  "d:\\CropSense AI\\cropsense-ai\\ml\\datasets\\processed\\cleaned_crop_data.csv": [],
+  "d:\\CropSense AI\\cropsense-ai\\ml\\datasets\\raw\\crop_dataset.csv": [],
+  "d:\\CropSense AI\\cropsense-ai\\ml\\datasets\\raw\\fertilizer_dataset.csv": [],
+  "d:\\CropSense AI\\cropsense-ai\\ml\\datasets\\raw\\seed_variety.csv": []
+}

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cropsense-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: serviceAccountKey.json
+      # Instructions: When deploying to Render, you must create a Secret File in your Render service setup:
+      # Filename: serviceAccountKey.json
+      # Contents: Paste your actual Firebase Service Account Key JSON here.
