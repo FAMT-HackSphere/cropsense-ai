@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../services/api_service.dart';
 import '../theme.dart';
-import 'home_screen.dart';
+import '../utils/error_handler.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,25 +28,36 @@ class _SplashScreenState extends State<SplashScreen> {
       _hasError = false;
     });
 
-    final ok = await ApiService.checkHealth();
+    try {
+      // Phase 3 & 9: Implement 10s Fail-Safe Timer
+      final connected = await Future.any([
+        ApiService.checkHealth(),
+        Future.delayed(const Duration(seconds: 10)).then((_) => false),
+      ]);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (ok) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
-      setState(() {
-        _status = 'Could not reach the server.';
-        _hasError = true;
-      });
+      if (connected) {
+        Navigator.pushReplacementNamed(context, "/home");
+      } else {
+        setState(() {
+          _status = ErrorHandler.getReadableError("Unable to connect to server.");
+          _hasError = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _status = ErrorHandler.getReadableError(e);
+          _hasError = true;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.primary,
       body: Center(
@@ -76,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Smart Crop Planning System',
+              l10n.smartCropPlanningSystem,
               style: GoogleFonts.sourceSans3(
                 fontSize: 16,
                 color: Colors.white70,
@@ -86,25 +98,31 @@ class _SplashScreenState extends State<SplashScreen> {
             if (!_hasError)
               const CircularProgressIndicator(color: Colors.white),
             const SizedBox(height: 16),
-            Text(
-              _status,
-              style: GoogleFonts.sourceSans3(
-                fontSize: 14,
-                color: Colors.white70,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                _status,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sourceSans3(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             if (_hasError) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: _checkBackend,
                 icon: const Icon(Icons.refresh, color: AppTheme.primary),
                 label: Text(
-                  'Retry',
-                  style: TextStyle(color: AppTheme.primary),
+                  l10n.retry,
+                  style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  minimumSize: const Size(160, 48),
+                  minimumSize: const Size(180, 52),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],

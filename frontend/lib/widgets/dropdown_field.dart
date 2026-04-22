@@ -20,9 +20,17 @@ class DropdownField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: DropdownButtonFormField<String>(
         value: value,
+        isExpanded: true,
         decoration: InputDecoration(labelText: label),
         items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(
+                    e,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ))
             .toList(),
         onChanged: onChanged,
       ),

@@ -7,7 +7,7 @@ class SliderInput extends StatelessWidget {
   final double value;
   final double min;
   final double max;
-  final int divisions;
+  final int? divisions;
   final String unit;
   final ValueChanged<double> onChanged;
 
@@ -17,8 +17,8 @@ class SliderInput extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.min = 0,
-    this.max = 140,
-    this.divisions = 140,
+    this.max = 500,
+    this.divisions,
     this.unit = '',
   });
 

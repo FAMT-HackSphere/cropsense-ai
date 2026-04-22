@@ -1,73 +1,48 @@
 from model_loader import predict, get_model
 import logging
+from services.reasoning_service import generate_scientific_explanation
+from services.farming_strategy_service import get_recommendations
 
 logger = logging.getLogger(__name__)
 
 def predict_crop(data: dict):
     """
-    Service for crop recommendation.
+    Service for crop recommendation with Farming Strategy support.
     """
+    land_area = data.get("land_area", 1.0)
+    strategy = data.get("farming_strategy", "Seasonal Farming")
+    
     try:
-        # Prepare features for crop recommendation
-        # Expected features based on typical dataset: N, P, K, temperature, humidity, ph, rainfall
-        features = {
-            "N": data.get("nitrogen"),
-            "P": data.get("phosphorus"),
-            "K": data.get("potassium"),
-            "temperature": data.get("temperature"),
-            "humidity": data.get("humidity"),
-            "ph": data.get("ph"),
-            "rainfall": data.get("rainfall")
-        }
+        # Get structured recommendations based on strategy
+        strategy_result = get_recommendations(strategy, data)
         
-        # Validation
-        for k, v in features.items():
-            if v is None:
-                return {"error": f"Missing value for {k}"}
-        
-        prediction = predict("crop_recommendation_model", features)
-        pred_val = prediction[0]
-        
-        # Determine if pred_val needs decoding
-        if isinstance(pred_val, str):
-            label = pred_val
+        if "error" in strategy_result:
+            return strategy_result
+
+        # For backward compatibility and identifying the primary crop for other services
+        if strategy == "Seasonal Farming":
+            recs = strategy_result.get("recommendations", [])
+            if not recs:
+                return {"error": "No highly suitable seasonal crops found for these conditions and strategy."}
+            primary_crop = recs[0]["name"]
         else:
-            # Map prediction back to label if possible
-            le = get_model("crop_encoder")
-            if le:
-                try:
-                    label = le.inverse_transform([pred_val])[0]
-                except:
-                    label = str(pred_val)
-            else:
-                # Fallback mapping if encoder missing
-                crop_labels = ['apple', 'banana', 'blackgram', 'chickpea', 'coconut', 'coffee', 'cotton', 'grapes', 'jute', 'kidneybeans', 'lentil', 'maize', 'mango', 'mothbeans', 'mungbean', 'muskmelon', 'orange', 'papaya', 'pigeonpeas', 'pomegranate', 'rice', 'watermelon']
-                idx = int(pred_val)
-                label = crop_labels[idx] if 0 <= idx < len(crop_labels) else f"Unknown ({idx})"
+            primary_crop = strategy_result.get("primary_crop")
+            if not primary_crop:
+                 return {"error": "No suitable crops found for the selected Orchard/Mixed strategy."}
 
         # Generate scientific explanation
-        crop_title = label.capitalize()
-        temp = data.get("temperature", 0)
-        rain = data.get("rainfall", 0)
-        n_val = data.get("nitrogen", 0)
-        
-        explanation = f"{crop_title} is scientifically optimal for your soil because it thrives in temperatures around {temp:.1f}°C. "
-        if rain > 100:
-            explanation += f"Additionally, your region's high rainfall ({rain:.1f} mm) is perfectly suited for {crop_title}'s water requirements. "
-        else:
-            explanation += f"Your moderate rainfall ({rain:.1f} mm) prevents waterlogging, which {crop_title} prefers. "
-            
-        if n_val > 60:
-            explanation += "The high Nitrogen concentration accelerates its vegetative growth, guaranteeing maximum yield."
-        else:
-            explanation += "The balanced Nitrogen levels promote deep root stabilization rather than excess foliage."
+        # Reasoning service can be upgraded later to handle strategy-specific text
+        explanation = generate_scientific_explanation(data, primary_crop)
 
-        return {
-            "recommended_crop": crop_title,
-            "seed_variety": "Advanced Hybrid",
-            "expected_yield": 12.5,
+        # Merge results
+        result = {
+            "recommended_crop": primary_crop, # Keep for compatibility with rotation/fertilizer
+            "strategy_data": strategy_result,
             "scientific_explanation": explanation
         }
+        
+        return result
+        
     except Exception as e:
         logger.error(f"Crop prediction service error: {e}")
         return {"error": str(e)}

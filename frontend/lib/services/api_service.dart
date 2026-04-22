@@ -1,45 +1,39 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
+import '../utils/error_handler.dart';
 
 class ApiService {
-  // ── Health Check ──────────────────────────────────────────────
+  // ── Health Check & Logging ─────────────────────────────
   static Future<bool> checkHealth() async {
-    // 1. Try the configured base URL first (this covers physical devices on Wi-Fi)
+    // STEP 3: HARD-LOG BASE URL
+    print("Initialized with BaseURL: ${ApiConfig.baseUrl}");
+    print("Attempting to connect to backend: ${ApiConfig.baseUrl}/health");
+    
     try {
-      final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/health'))
-          .timeout(const Duration(seconds: 4));
-      if (response.statusCode == 200) {
-        return true;
-      }
-    } catch (_) {}
+      // 1. Try the current configured base URL with strict 8s timeout
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}/health'))
+          .timeout(const Duration(seconds: 8));
 
-    // 2. Try the Android Emulator specific alias if the first failed
-    try {
-      String url = 'http://10.0.2.2:8000';
-      final response = await http.get(Uri.parse('$url/health'))
-          .timeout(const Duration(seconds: 4));
       if (response.statusCode == 200) {
-        ApiConfig.baseUrl = url;
+        print("Backend connection success: ${response.statusCode}");
         return true;
+      } else {
+        print("Backend connection failed with status: ${response.statusCode}");
       }
-    } catch (_) {}
+    } catch (e) {
+      print("Backend connection failed with error: $e");
+    }
 
-    // 3. Try localhost fallback (Desktop, Web, or ADB reverse tcp)
-    try {
-      String url = 'http://127.0.0.1:8000';
-      final response = await http.get(Uri.parse('$url/health'))
-          .timeout(const Duration(seconds: 4));
-      if (response.statusCode == 200) {
-        ApiConfig.baseUrl = url;
-        return true;
-      }
-    } catch (_) {}
+    // 2. Emulator Check (Logging only, no assignment)
+    if (ApiConfig.baseUrl.contains('127.0.0.1')) {
+      print("Note: If using an emulator without ADB reverse, the backend at 127.0.0.1 may be unreachable.");
+    }
 
     return false;
   }
 
-  // ── Crop Prediction ───────────────────────────────────────────
   static Future<Map<String, dynamic>> predictCrop({
     required double nitrogen,
     required double phosphorus,
@@ -48,6 +42,13 @@ class ApiService {
     required double humidity,
     required double ph,
     required double rainfall,
+    required double landArea,
+    String? district,
+    String? soilType,
+    double? organicCarbon,
+    double? soilMoisture,
+    String? farmingStrategy,
+    int? orchardAge,
   }) async {
     return _post('/predict/crop', {
       'nitrogen': nitrogen,
@@ -57,25 +58,32 @@ class ApiService {
       'humidity': humidity,
       'ph': ph,
       'rainfall': rainfall,
+      'land_area': landArea,
+      'district': district,
+      'soil_type': soilType,
+      'organic_carbon': organicCarbon,
+      'soil_moisture': soilMoisture,
+      'farming_strategy': farmingStrategy,
+      'orchard_age': orchardAge,
     });
   }
 
-  // ── Seed Prediction ───────────────────────────────────────────
   static Future<Map<String, dynamic>> predictSeed({
     required String cropName,
     required String soilType,
     double temperature = 25,
     double rainfall = 150,
+    double landArea = 1.0,
   }) async {
     return _post('/predict/seed', {
       'crop_name': cropName,
       'soil_type': soilType,
       'temperature': temperature,
       'rainfall': rainfall,
+      'land_area': landArea,
     });
   }
 
-  // ── Fertilizer Prediction ─────────────────────────────────────
   static Future<Map<String, dynamic>> predictFertilizer({
     required double nitrogen,
     required double phosphorus,
@@ -86,6 +94,9 @@ class ApiService {
     required double humidity,
     required double rainfall,
     required String cropName,
+    required double landArea,
+    String? soilType,
+    double? organicCarbon,
   }) async {
     return _post('/predict/fertilizer', {
       'nitrogen': nitrogen,
@@ -97,10 +108,12 @@ class ApiService {
       'humidity': humidity,
       'rainfall': rainfall,
       'crop_name': cropName,
+      'land_area': landArea,
+      'soil_type': soilType,
+      'organic_carbon': organicCarbon,
     });
   }
 
-  // ── Rotation Prediction ───────────────────────────────────────
   static Future<Map<String, dynamic>> predictRotation({
     required String currentCrop,
     required String season,
@@ -109,6 +122,7 @@ class ApiService {
     double potassium = 50,
     double ph = 6.5,
     double moisture = 50,
+    double landArea = 1.0,
   }) async {
     return _post('/predict/rotation', {
       'current_crop': currentCrop,
@@ -118,6 +132,7 @@ class ApiService {
       'potassium': potassium,
       'ph': ph,
       'moisture': moisture,
+      'land_area': landArea,
     });
   }
 
@@ -157,17 +172,23 @@ class ApiService {
           )
           .timeout(ApiConfig.timeout);
 
-      final data = json.decode(response.body) as Map<String, dynamic>;
-
-      if (response.statusCode == 200) {
-        return data;
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return json.decode(response.body) as Map<String, dynamic>;
       } else {
-        final detail = data['detail'] ?? 'Server error (${response.statusCode})';
-        throw Exception(detail);
+        String msg;
+        try {
+          final data = json.decode(response.body);
+          msg = (data is Map && data.containsKey('detail')) 
+              ? data['detail'].toString() 
+              : 'Server error (${response.statusCode})';
+        } catch (_) {
+          msg = 'Server encountered an error (${response.statusCode}). Please check backend logs.';
+        }
+        throw Exception(msg);
       }
-    } on Exception catch (e) {
-      final msg = e.toString().replaceFirst('Exception: ', '');
-      throw Exception(msg);
+    } catch (e) {
+      // Use mapper to translate network/server errors
+      throw Exception(ErrorHandler.getReadableError(e));
     }
   }
 }

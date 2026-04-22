@@ -35,6 +35,7 @@ ml/datasets/processed/*.csv
 # Project specific
 backend/models/yield_model (2).pkl
 serviceAccountKey.json
+backend/serviceAccountKey - Copy.json
 datasets.zip
 data/
 *.zip

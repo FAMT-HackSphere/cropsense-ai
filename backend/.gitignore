@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+venv/
+.venv/
+images/
+.env
+
+# Firebase secrets
+serviceAccountKey.json
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
+logs/
+.pytest_cache/

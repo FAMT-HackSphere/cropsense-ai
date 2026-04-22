@@ -58,5 +58,33 @@ def predict(model_key, input_dict):
     prediction = model.predict(df)
     return prediction.tolist()
 
+def predict_proba(model_key, input_dict):
+    """
+    Runs prediction probability for a given model key and input dictionary.
+    """
+    model = get_model(model_key)
+    if not model:
+        raise ValueError(f"Model {model_key} not loaded.")
+    
+    # Convert input to DataFrame
+    df = pd.DataFrame([input_dict])
+    
+    if hasattr(model, "predict_proba"):
+        probabilities = model.predict_proba(df)
+        return probabilities.tolist()[0]
+    return []
+
+def get_classes(model_key):
+    """
+    Returns the classes for a given model.
+    """
+    model = get_model(model_key)
+    if not model:
+        return []
+    
+    if hasattr(model, "classes_"):
+        return model.classes_.tolist()
+    return []
+
 # Initial load on import
 load_all_models()

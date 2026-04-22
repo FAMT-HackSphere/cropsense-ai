@@ -1,64 +1,64 @@
-from model_loader import predict, get_model
 import logging
 
 logger = logging.getLogger(__name__)
 
+# Deterministic Rotation Mappings
+ROTATION_RULES = {
+    "rice": {
+        "next": "Chickpea",
+        "reason": "Rice depletes Nitrogen significantly. Chickpea is a legume that fixes atmospheric Nitrogen, restoring soil fertility naturally.",
+        "duration": "110-120 days"
+    },
+    "cotton": {
+        "next": "Blackgram",
+        "reason": "Cotton is a long-duration, nutrient-heavy crop. Blackgram (Urad) helps in soil recovery and breaks pest cycles.",
+        "duration": "80-90 days"
+    },
+    "maize": {
+        "next": "Soybean",
+        "reason": "Maize is high in Nitrogen demand. Soybean replenishes soil Nitrogen and improves organic matter content.",
+        "duration": "100-110 days"
+    },
+    "wheat": {
+        "next": "Mustard",
+        "reason": "Rotating with Mustard helps break the monoculture of cereals, improves soil health, and has low water requirements.",
+        "duration": "110-120 days"
+    },
+    "groundnut": {
+        "next": "Maize",
+        "reason": "Groundnut fixes Nitrogen; following it with Maize allows the cereal to utilize the residual soil Nitrogen efficiently.",
+        "duration": "110-120 days"
+    },
+    "soybean": {
+        "next": "Wheat",
+        "reason": "Soybean leaves the soil enriched with Nitrogen, which provides an excellent foundation for the subsequent wheat crop.",
+        "duration": "120-130 days"
+    }
+}
+
+DEFAULT_ROTATION = {
+    "next": "Green Gram (Moong)",
+    "reason": "Moong is a versatile, short-duration legume that improves soil health through Nitrogen fixation and organic enrichment.",
+    "duration": "70-80 days"
+}
+
 def recommend_rotation(data: dict):
     """
-    Service for crop rotation recommendation.
+    Service for deterministic crop rotation recommendation.
     """
     try:
-        # Prepare features
-        # le_prev_crop, le_season_rot, scaler_rot are available
-        le_crop = get_model("le_prev_crop")
-        le_season = get_model("le_season_rot")
+        prev_crop = data.get("current_crop", "").lower().strip()
         
-        prev_crop_encoded = 0
-        if le_crop:
-            try:
-                # Try original, then capitalized, then default 0
-                val = data.get("current_crop", "Rice")
-                try:
-                    prev_crop_encoded = le_crop.transform([val])[0]
-                except:
-                    prev_crop_encoded = le_crop.transform([val.capitalize()])[0]
-            except:
-                prev_crop_encoded = 0
-                
-        season_encoded = 0
-        if le_season:
-            try:
-                val = data.get("season", "Kharif")
-                try:
-                    season_encoded = le_season.transform([val])[0]
-                except:
-                    season_encoded = le_season.transform([val.capitalize()])[0]
-            except:
-                season_encoded = 0
-
-        features = {
-            "Previous Crop Encoded": prev_crop_encoded,
-            "Current Soil N": data.get("nitrogen", 50),
-            "Current Soil P": data.get("phosphorus", 50),
-            "Current Soil K": data.get("potassium", 50),
-            "Soil pH": data.get("ph", 6.5),
-            "Season Encoded": season_encoded,
-            "Soil Moisture": data.get("moisture", 50)
-        }
-
-        prediction = predict("crop_rotation_model", features)
+        # Priority mapping
+        rule = ROTATION_RULES.get(prev_crop, DEFAULT_ROTATION)
         
-        # Map back prediction
-        le_next = get_model("le_prev_crop") # Assuming same encoder for next crop
-        if le_next:
-            label = le_next.inverse_transform(prediction)[0]
-        else:
-            label = str(prediction[0])
-
         return {
-            "recommended_next_crop": label.capitalize(),
-            "soil_benefit": "Improves organic matter and Nitrogen levels."
+            "recommended_next_crop": rule["next"],
+            "benefit": rule["reason"],
+            "rotation_duration": rule["duration"],
+            "scientific_explanation": f"Based on the previous cultivation of {prev_crop.capitalize()}, rotating with {rule['next']} is recommended because {rule['reason']}"
         }
+
     except Exception as e:
         logger.error(f"Crop rotation service error: {e}")
         return {"error": str(e)}

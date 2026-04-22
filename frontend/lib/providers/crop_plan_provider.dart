@@ -11,6 +11,44 @@ class CropPlanProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Extended Agricultural Data ────────────────────────────────
+  String _soilType = 'Loamy';
+  String get soilType => _soilType;
+  void setSoilType(String value) { _soilType = value; notifyListeners(); }
+
+  double _soilMoisture = 50.0;
+  double get soilMoisture => _soilMoisture;
+  void setSoilMoisture(double value) { _soilMoisture = value; notifyListeners(); }
+
+  double _organicCarbon = 1.0;
+  double get organicCarbon => _organicCarbon;
+  void setOrganicCarbon(double value) { _organicCarbon = value; notifyListeners(); }
+
+  double _soilEC = 1.0;
+  double get soilEC => _soilEC;
+  void setSoilEC(double value) { _soilEC = value; notifyListeners(); }
+
+  String _season = 'Kharif';
+  String get season => _season;
+  void setSeason(String value) { _season = value; notifyListeners(); }
+
+  double _landArea = 1.0;
+  double get landArea => _landArea;
+  void setLandArea(double value) { _landArea = value; notifyListeners(); }
+
+  String _region = '';
+  String get region => _region;
+  void setRegion(String value) { _region = value; notifyListeners(); }
+
+
+  String _farmingStrategy = 'Seasonal Farming';
+  String get farmingStrategy => _farmingStrategy;
+  void setFarmingStrategy(String value) { _farmingStrategy = value; notifyListeners(); }
+
+  int _orchardAge = 0;
+  int get orchardAge => _orchardAge;
+  void setOrchardAge(int value) { _orchardAge = value; notifyListeners(); }
+
   // ── Crop Result ───────────────────────────────────────────────
   Map<String, dynamic>? _cropResult;
   Map<String, dynamic>? get cropResult => _cropResult;
@@ -52,6 +90,7 @@ class CropPlanProvider extends ChangeNotifier {
 
     try {
       // 1) Crop prediction
+      print("Scaling results using land area: $_landArea");
       _cropResult = await ApiService.predictCrop(
         nitrogen: (_soilInput['nitrogen'] as num).toDouble(),
         phosphorus: (_soilInput['phosphorus'] as num).toDouble(),
@@ -60,6 +99,13 @@ class CropPlanProvider extends ChangeNotifier {
         humidity: (_soilInput['humidity'] as num).toDouble(),
         ph: (_soilInput['ph'] as num).toDouble(),
         rainfall: (_soilInput['rainfall'] as num).toDouble(),
+        landArea: _landArea,
+        district: _region,
+        soilType: _soilType,
+        organicCarbon: _organicCarbon,
+        soilMoisture: _soilMoisture,
+        farmingStrategy: _farmingStrategy,
+        orchardAge: _orchardAge,
       );
 
       // 2) Seed prediction (background, uses crop result + soil input)
@@ -69,6 +115,7 @@ class CropPlanProvider extends ChangeNotifier {
           soilType: _soilInput['soil_type'] ?? 'Loamy',
           temperature: (_soilInput['temperature'] as num).toDouble(),
           rainfall: (_soilInput['rainfall'] as num).toDouble(),
+          landArea: _landArea,
         );
       } catch (_) {
         // Seed fetch failure is non-critical; crop result still valid
@@ -89,6 +136,7 @@ class CropPlanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      print("Scaling results using land area: $_landArea");
       _fertilizerResult = await ApiService.predictFertilizer(
         nitrogen: (_soilInput['nitrogen'] as num).toDouble(),
         phosphorus: (_soilInput['phosphorus'] as num).toDouble(),
@@ -99,6 +147,9 @@ class CropPlanProvider extends ChangeNotifier {
         humidity: (_soilInput['humidity'] as num).toDouble(),
         rainfall: (_soilInput['rainfall'] as num).toDouble(),
         cropName: recommendedCrop,
+        landArea: _landArea,
+        soilType: _soilType,
+        organicCarbon: _organicCarbon,
       );
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -115,6 +166,7 @@ class CropPlanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      print("Scaling results using land area: $_landArea");
       _rotationResult = await ApiService.predictRotation(
         currentCrop: recommendedCrop,
         season: season,
@@ -123,6 +175,7 @@ class CropPlanProvider extends ChangeNotifier {
         potassium: (_soilInput['potassium'] as num).toDouble(),
         ph: (_soilInput['ph'] as num).toDouble(),
         moisture: (_soilInput['moisture'] as num?)?.toDouble() ?? 50,
+        landArea: _landArea,
       );
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -145,8 +198,11 @@ class CropPlanProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final yieldAmount =
+      print("Scaling results using land area: $_landArea");
+      final yieldPerHa =
           (_cropResult?['expected_yield'] as num?)?.toDouble() ?? 1.0;
+      final hectares = _landArea * 0.4047;
+      final totalYield = yieldPerHa * hectares;
 
       _economicResult = await ApiService.predictEconomic(
         cropName: recommendedCrop,
@@ -154,7 +210,7 @@ class CropPlanProvider extends ChangeNotifier {
         fertilizerCost: fertilizerCost,
         laborCost: laborCost,
         irrigationCost: irrigationCost,
-        yieldAmount: yieldAmount,
+        yieldAmount: totalYield,
         marketPrice: marketPrice,
       );
     } catch (e) {
@@ -168,6 +224,14 @@ class CropPlanProvider extends ChangeNotifier {
   /// Resets everything for a new planning session.
   void reset() {
     _soilInput = {};
+    _soilType = 'Loamy';
+    _soilMoisture = 50.0;
+    _organicCarbon = 1.0;
+    _soilEC = 1.0;
+    _season = 'Kharif';
+    _landArea = 1.0;
+    _region = '';
+
     _cropResult = null;
     _seedResult = null;
     _fertilizerResult = null;

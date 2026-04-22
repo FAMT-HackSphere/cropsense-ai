@@ -28,27 +28,15 @@ app.include_router(economic_routes.router, prefix="/predict", tags=["Economic An
 # Step 8: Add Health Check Endpoint
 @app.get("/health")
 async def health_check():
-    models = model_loader._MODELS
-    core_models = [
-        "crop_recommendation_model",
-        "fertilizer_model",
-        "crop_rotation_model",
-        "seed_variety_model",
-        "economic_model"
-    ]
-    
-    loaded_core = [m for m in core_models if m in models]
-    
-    return {
-        "status": "ok",
-        "models_loaded": len(loaded_core) == len(core_models),
-        "model_count": len(loaded_core),
-        "total_artifacts_loaded": len(models)
-    }
+    """
+    Standard health check endpoint.
+    """
+    return {"status": "ok"}
+
 
 @app.get("/")
 async def root():
-    return {"message": "CropSense AI ML Backend is active"}
+    return {"status": "CropSense API running"}
 
 if __name__ == "__main__":
     import uvicorn

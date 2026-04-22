@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../theme.dart';
 import '../providers/crop_plan_provider.dart';
-import 'pipeline_screen.dart';
-
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onNavigateTab;
+
+  const HomeScreen({super.key, this.onNavigateTab});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final planner = context.watch<CropPlanProvider>();
+    final lastCrop = planner.cropResult?['recommended_crop'] ?? planner.cropResult?['crop'] ?? l10n.noHistoryMsg;
+    final bool hasHistory = planner.cropResult != null;
+    
+    String yieldText = "N/A";
+    String profitText = "N/A";
+    
+    if (hasHistory) {
+      yieldText = planner.cropResult?['yield']?.toString() ?? l10n.expectedYield;
+      profitText = planner.economicResult?['profit']?.toString() ?? l10n.profitEstimate;
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -35,7 +49,7 @@ class HomeScreen extends StatelessWidget {
 
               // Title
               Text(
-                'CropSense AI',
+                l10n.appTitle,
                 style: GoogleFonts.montserrat(
                   fontSize: 30,
                   fontWeight: FontWeight.w700,
@@ -44,7 +58,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Your intelligent crop planning assistant.\nEnter your soil data once — get a complete\nfarm plan powered by AI.',
+                l10n.appDescription,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sourceSans3(
                   fontSize: 15,
@@ -52,36 +66,96 @@ class HomeScreen extends StatelessWidget {
                   color: AppTheme.textSecondary,
                 ),
               ),
-
-              const Spacer(flex: 2),
-
-              // Features summary
-              _featureChip(Icons.grass, 'Crop Recommendation'),
-              _featureChip(Icons.science, 'Fertilizer Plan'),
-              _featureChip(Icons.loop, 'Rotation Strategy'),
-              _featureChip(Icons.attach_money, 'Profit Estimation'),
               const SizedBox(height: 32),
-
-              // Primary CTA
+              
+              // Primary Actions
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Reset any old session state
                     context.read<CropPlanProvider>().reset();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const PipelineScreen()),
-                    );
+                    if (onNavigateTab != null) onNavigateTab!(1); // Go to Recommendation Tab
                   },
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Start Smart Crop Planning'),
+                  icon: const Icon(Icons.add_circle_outline),
+                  label: Text(l10n.startNewPrediction),
                 ),
               ),
-
-              const Spacer(flex: 1),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    if (onNavigateTab != null) onNavigateTab!(2); // Go to History Tab
+                  },
+                  icon: const Icon(Icons.history),
+                  label: Text(l10n.viewHistory),
+                ),
+              ),
+              
+              const SizedBox(height: 48),
+              
+              // Quick Summary
+              Text(
+                l10n.recentSummary,
+                style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  ]
+                ),
+                child: hasHistory ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.lastRecommendedCrop,
+                      style: GoogleFonts.sourceSans3(color: AppTheme.textSecondary, fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      lastCrop.toString().toUpperCase(),
+                      style: GoogleFonts.montserrat(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primary,
+                      ),
+                    ),
+                    const Divider(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _summaryMetric(l10n.expectedYield, yieldText, Icons.grass),
+                        _summaryMetric(l10n.profitEstimate, profitText, Icons.attach_money),
+                      ],
+                    ),
+                  ]
+                ) : Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      l10n.noHistoryMsg,
+                      style: GoogleFonts.sourceSans3(color: AppTheme.textSecondary),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -89,22 +163,32 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  static Widget _featureChip(IconData icon, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppTheme.secondary),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: GoogleFonts.sourceSans3(
-              fontSize: 15,
-              color: AppTheme.textSecondary,
+  Widget _summaryMetric(String label, String value, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: AppTheme.secondary, size: 20),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.sourceSans3(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
             ),
-          ),
-        ],
-      ),
+            Text(
+              value,
+              style: GoogleFonts.sourceSans3(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

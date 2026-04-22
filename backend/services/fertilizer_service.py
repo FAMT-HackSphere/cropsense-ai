@@ -7,10 +7,12 @@ def recommend_fertilizer(data: dict):
     """
     Service for fertilizer recommendation.
     """
+    land_area = data.get("land_area", 1.0)
+    print(f"Scaling results using land area: {land_area}")
+    
     try:
         # Prepare features for fertilizer recommendation
         # Based on available encoders: le_crop_type_fert.pkl
-        # Encoding for Crop Type if needed
         le_fert = get_model("le_crop_type_fert")
         crop_encoded = 0
         if le_fert:
@@ -39,8 +41,6 @@ def recommend_fertilizer(data: dict):
         prediction = predict("fertilizer_model", features)
         
         # Map prediction back to label
-        # Check le_crop_type_fert or similar
-        # Fallback to standard 7-class fertilizer mapping if numeric
         fert_map = ['10-26-26', '14-35-14', '17-17-17', '20-20', '28-28', 'DAP', 'Urea']
         pred_val = prediction[0]
         
@@ -53,7 +53,7 @@ def recommend_fertilizer(data: dict):
         return {
             "recommended_fertilizer": recommended_fertilizer,
             "eco_friendly_option": "Organic Compost Mix",
-            "quantity": 20.0
+            "quantity": round(20.0 * land_area, 2)
         }
     except Exception as e:
         logger.error(f"Fertilizer recommendation service error: {e}")
