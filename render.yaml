@@ -3,11 +3,11 @@ services:
     name: cropsense-backend
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.8
       - key: GOOGLE_APPLICATION_CREDENTIALS
         value: serviceAccountKey.json
       # Instructions: When deploying to Render, you must create a Secret File in your Render service setup:
