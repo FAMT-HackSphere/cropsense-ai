@@ -1,0 +1,52 @@
+{
+  "Gujarat": {
+    "district": "Kutch",
+    "soil_type": "Sandy",
+    "nitrogen": 40.0,
+    "phosphorus": 35.0,
+    "potassium": 250.0,
+    "ph": 7.8,
+    "organic_carbon": 0.4,
+    "moisture": 20.0
+  },
+  "Maharashtra": {
+    "district": "Pune",
+    "soil_type": "Black Soil",
+    "nitrogen": 60.0,
+    "phosphorus": 45.0,
+    "potassium": 300.0,
+    "ph": 7.0,
+    "organic_carbon": 0.8,
+    "moisture": 45.0
+  },
+  "Rajasthan": {
+    "district": "Jaipur",
+    "soil_type": "Sandy",
+    "nitrogen": 30.0,
+    "phosphorus": 25.0,
+    "potassium": 180.0,
+    "ph": 8.2,
+    "organic_carbon": 0.3,
+    "moisture": 15.0
+  },
+  "Punjab": {
+    "district": "Ludhiana",
+    "soil_type": "Loamy",
+    "nitrogen": 80.0,
+    "phosphorus": 55.0,
+    "potassium": 220.0,
+    "ph": 7.4,
+    "organic_carbon": 1.1,
+    "moisture": 40.0
+  },
+  "Karnataka": {
+    "district": "Dharwad",
+    "soil_type": "Red Soil",
+    "nitrogen": 55.0,
+    "phosphorus": 40.0,
+    "potassium": 280.0,
+    "ph": 6.8,
+    "organic_carbon": 0.7,
+    "moisture": 35.0
+  }
+}

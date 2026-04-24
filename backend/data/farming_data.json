@@ -1,0 +1,136 @@
+{
+  "crop_categories": {
+    "seasonal_crops": [
+      "rice",
+      "wheat",
+      "maize",
+      "cotton",
+      "soybean",
+      "groundnut",
+      "mustard",
+      "chickpea",
+      "lentil",
+      "pigeonpeas",
+      "blackgram",
+      "mungbean",
+      "jute",
+      "sorghum",
+      "millet",
+      "kidneybeans",
+      "mothbeans"
+    ],
+    "orchard_crops": [
+      "mango",
+      "coconut",
+      "orange",
+      "grapes",
+      "banana",
+      "papaya",
+      "coffee",
+      "pomegranate",
+      "apple",
+      "watermelon",
+      "muskmelon"
+    ]
+  },
+  "intercrop_map": {
+    "mango": ["groundnut", "chickpea", "vegetables"],
+    "coconut": ["banana", "pineapple", "turmeric"],
+    "orange": ["soybean", "green gram"],
+    "grapes": ["onion", "garlic"],
+    "coffee": ["pepper", "banana"]
+  },
+  "companion_crop_map": {
+    "rice": ["green gram"],
+    "cotton": ["blackgram"],
+    "maize": ["soybean"],
+    "wheat": ["mustard"],
+    "groundnut": ["maize"],
+    "soybean": ["maize"]
+  },
+  "orchard_metrics": {
+    "mango": {
+      "spacing": "8m x 8m",
+      "plants_per_acre": 63,
+      "bearing_start": 4,
+      "full_production": 8,
+      "lifespan": 35,
+      "initial_investment_per_acre": 45000
+    },
+    "coconut": {
+      "spacing": "7.5m x 7.5m",
+      "plants_per_acre": 70,
+      "bearing_start": 5,
+      "full_production": 10,
+      "lifespan": 60,
+      "initial_investment_per_acre": 35000
+    },
+    "orange": {
+      "spacing": "6m x 6m",
+      "plants_per_acre": 110,
+      "bearing_start": 4,
+      "full_production": 7,
+      "lifespan": 25,
+      "initial_investment_per_acre": 55000
+    },
+    "grapes": {
+      "spacing": "3m x 3m",
+      "plants_per_acre": 440,
+      "bearing_start": 2,
+      "full_production": 4,
+      "lifespan": 20,
+      "initial_investment_per_acre": 85000
+    },
+    "banana": {
+      "spacing": "2m x 2m",
+      "plants_per_acre": 1000,
+      "bearing_start": 1,
+      "full_production": 1,
+      "lifespan": 5,
+      "initial_investment_per_acre": 65000
+    },
+    "papaya": {
+      "spacing": "2m x 2m",
+      "plants_per_acre": 1000,
+      "bearing_start": 1,
+      "full_production": 1,
+      "lifespan": 3,
+      "initial_investment_per_acre": 30000
+    },
+    "pomegranate": {
+      "spacing": "5m x 5m",
+      "plants_per_acre": 160,
+      "bearing_start": 3,
+      "full_production": 6,
+      "lifespan": 25,
+      "initial_investment_per_acre": 50000
+    },
+    "coffee": {
+      "spacing": "2.5m x 2.5m",
+      "plants_per_acre": 640,
+      "bearing_start": 3,
+      "full_production": 6,
+      "lifespan": 40,
+      "initial_investment_per_acre": 75000
+    }
+  },
+  "seasonal_crops_details": {
+    "rice": { "duration": 150, "water": "High", "seed_rate": "30 kg/acre", "season": "Kharif", "n_fixing": false, "input_cost": "High", "market_demand": 9, "avg_price": 20000 },
+    "wheat": { "duration": 130, "water": "Moderate", "seed_rate": "45 kg/acre", "season": "Rabi", "n_fixing": false, "input_cost": "Moderate", "market_demand": 8, "avg_price": 22000 },
+    "maize": { "duration": 110, "water": "Moderate", "seed_rate": "10 kg/acre", "season": "Kharif/Rabi", "n_fixing": false, "input_cost": "Moderate", "market_demand": 7, "avg_price": 18000 },
+    "cotton": { "duration": 180, "water": "Moderate", "seed_rate": "2.5 kg/acre", "season": "Kharif", "n_fixing": false, "input_cost": "High", "market_demand": 9, "avg_price": 60000 },
+    "soybean": { "duration": 100, "water": "Moderate", "seed_rate": "30 kg/acre", "season": "Kharif", "n_fixing": true, "input_cost": "Moderate", "market_demand": 8, "avg_price": 45000 },
+    "groundnut": { "duration": 120, "water": "Moderate", "seed_rate": "42 kg/acre", "season": "Kharif", "n_fixing": true, "input_cost": "Moderate", "market_demand": 7, "avg_price": 55000 },
+    "mustard": { "duration": 120, "water": "Low", "seed_rate": "2.5 kg/acre", "season": "Rabi", "n_fixing": false, "input_cost": "Low", "market_demand": 7, "avg_price": 50000 },
+    "chickpea": { "duration": 120, "water": "Low", "seed_rate": "32 kg/acre", "season": "Rabi", "n_fixing": true, "input_cost": "Low", "market_demand": 8, "avg_price": 48000 },
+    "lentil": { "duration": 110, "water": "Low", "seed_rate": "15 kg/acre", "season": "Rabi", "n_fixing": true, "input_cost": "Low", "market_demand": 6, "avg_price": 60000 },
+    "pigeonpeas": { "duration": 170, "water": "Low", "seed_rate": "5 kg/acre", "season": "Kharif", "n_fixing": true, "input_cost": "Low", "market_demand": 8, "avg_price": 55000 },
+    "blackgram": { "duration": 85, "water": "Low", "seed_rate": "8 kg/acre", "season": "Kharif", "n_fixing": true, "input_cost": "Low", "market_demand": 7, "avg_price": 65000 },
+    "mungbean": { "duration": 75, "water": "Low", "seed_rate": "10 kg/acre", "season": "Summer", "n_fixing": true, "input_cost": "Low", "market_demand": 7, "avg_price": 70000 },
+    "sorghum": { "duration": 110, "water": "Low", "seed_rate": "4 kg/acre", "season": "Kharif/Rabi", "n_fixing": false, "input_cost": "Low", "market_demand": 6, "avg_price": 25000 },
+    "millet": { "duration": 90, "water": "Low", "seed_rate": "2 kg/acre", "season": "Kharif", "n_fixing": false, "input_cost": "Low", "market_demand": 7, "avg_price": 30000 },
+    "jute": { "duration": 120, "water": "High", "seed_rate": "3 kg/acre", "season": "Kharif", "n_fixing": false, "input_cost": "Moderate", "market_demand": 6, "avg_price": 35000 },
+    "kidneybeans": { "duration": 90, "water": "Moderate", "seed_rate": "35 kg/acre", "season": "Rabi", "n_fixing": true, "input_cost": "Moderate", "market_demand": 7, "avg_price": 65000 },
+    "mothbeans": { "duration": 70, "water": "Low", "seed_rate": "6 kg/acre", "season": "Summer", "n_fixing": true, "input_cost": "Low", "market_demand": 6, "avg_price": 50000 }
+  }
+}
