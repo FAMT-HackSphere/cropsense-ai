@@ -6,13 +6,19 @@ from model_loader import predict_proba, get_classes, get_model
 logger = logging.getLogger(__name__)
 
 # Load configuration data
-# Robust path handling for both local and Render (rootDir: backend) environments
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "data", "farming_data.json")
+# Search in multiple possible locations for Render compatibility
+possible_paths = [
+    os.path.join(os.getcwd(), "data", "farming_data.json"),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "farming_data.json"),
+    os.path.join("/opt/render/project/src/data", "farming_data.json"),
+    "data/farming_data.json"
+]
 
-# Fallback check for Render
-if not os.path.exists(DATA_PATH):
-    DATA_PATH = os.path.join(os.getcwd(), "data", "farming_data.json")
+DATA_PATH = possible_paths[0]
+for path in possible_paths:
+    if os.path.exists(path):
+        DATA_PATH = path
+        break
 
 def load_farming_data():
     try:
